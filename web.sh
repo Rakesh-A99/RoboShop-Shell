@@ -37,29 +37,28 @@ VALIDATE $? "enabling nginx"
 
 systemctl start nginx &>> $LOGFILE
 
-VALIDATE $? "Starting nginx"
+VALIDATE $? "stating nginx"
 
 rm -rf /usr/share/nginx/html/* &>> $LOGFILE
 
 VALIDATE $? "removing html index files"
 
-curl -o /tmp/web.zip https://roboshop-builds.s3.amazonaws.com/web.zip &>> $LOGFILE
+curl -o /tmp/web.zip https://roboshop-builds.s3.amazonaws.com/web.zip &>> $LOGFILE      
 
-VALIDATE $? "downloading web.zip artifactory "
+VALIDATE $? "downloading artifact"
 
 cd /usr/share/nginx/html &>> $LOGFILE
 
-VALIDATE $? "moving to /usr/share/nginx/html "
+VALIDATE $? "moving to /usr/share/nginx/html"
 
 unzip /tmp/web.zip &>> $LOGFILE
 
-VALIDATE $? "unzipping artifactory"
+VALIDATE $? "unzipping web.zip"
 
 cp /home/centos/RoboShop-Shell/roboshop.conf /etc/nginx/default.d/roboshop.conf &>> $LOGFILE
 
-VALIDATE $? "copying rroboshop.conf to /etc/nginx/default.d/roboshop.conf "
+VALIDATE $? "copying roboshop.conf "
 
-systemctl restart nginx 
+systemctl restart nginx &>> $LOGFILE
 
-VALIDATE $? "restating nginx"
-
+VALIDATE $? "restarting nginx"
