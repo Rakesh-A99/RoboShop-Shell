@@ -9,7 +9,8 @@ R="\e[31m"
 G="\e[32m"
 N="\e[0m"
 Y="\e[33m"
-if [ $USERID -ne 0]; then
+if [ $USERID -ne 0]; 
+then
     echo -e "$R ERROR:: Please run this script with root access $N"
     exit 1
 fi
@@ -22,9 +23,13 @@ VALIDATE(){
         echo -e "$2 ... $G SUCCESS $N"
     fi
 }
-curl -sL https://rpm.nodesource.com/setup_lts.x | bash
+curl -sL https://rpm.nodesource.com/setup_lts.x | bash &>> $LOGFILE
 
-yum install nodejs -y
+VALIDATE $? "downloading nodejs script"
+
+yum install nodejs -y &>> $LOGFILE
+
+VALIDATE $? "installing nodeJS"
 
 if [ id $USER_NAME -ne 0 ]; 
 then
