@@ -22,4 +22,5 @@ do
                                     "TTL": 300,
                                     "ResourceRecords": [{ "Value": "'$IP_ADDRESS'"}]
                                     }}]
-    }
+    }'
+ done
