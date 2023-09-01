@@ -1,17 +1,24 @@
 #!/bin/bash
 
 DATE=$(date +%F)
+LOGSDIR=/tmp
+# /home/centos/shellscript-logs/script-name-date.log
 SCRIPT_NAME=$0
-USER_ID=$(id -u)
-LOGFILE=/tmp/$SCRIPT_NAME-$DATE.log
+LOGFILE=$LOGSDIR/$0-$DATE.log
+USERID=$(id -u)
 R="\e[31m"
 G="\e[32m"
 N="\e[0m"
 Y="\e[33m"
-#Function
+
+if [ $USERID -ne 0 ];
+then
+    echo -e "$R ERROR:: Please run this script with root access $N"
+    exit 1
+fi
+
 VALIDATE(){
-    #$1 --> it will receive the argument1
-    if [ $1 -ne 0 ]
+    if [ $1 -ne 0 ];
     then
         echo -e "$2 ... $R FAILURE $N"
         exit 1
@@ -19,46 +26,39 @@ VALIDATE(){
         echo -e "$2 ... $G SUCCESS $N"
     fi
 }
-if [ $USER_ID -ne 0 ]
-then
-    echo "please login with root ID for installation"
-    exit 1 
-fi
-#The Web/Frontend is the service in RoboShop to serve the web content over Nginx.
-#This will have the web page for the web application.
-#Developer has chosen Nginx as a web server and thus we will install Nginx Web Server.
-yum install nginx -y &>> $LOGFILE
 
-VALIDATE $? "installed nginx" 
+yum install nginx -y &>>$LOGFILE
 
-systemctl enable nginx &>> $LOGFILE
+VALIDATE $? "Installing Nginx"
 
-VALIDATE $? "enabling nginx" 
+systemctl enable nginx &>>$LOGFILE
 
-systemctl start nginx &>> $LOGFILE
+VALIDATE $? "Enabling Nginx"
 
-VALIDATE $? "stating nginx"
+systemctl start nginx &>>$LOGFILE
 
-rm -rf /usr/share/nginx/html/* &>> $LOGFILE
+VALIDATE $? "Starting Nginx"
 
-VALIDATE $? "removing html index files"
+rm -rf /usr/share/nginx/html/* &>>$LOGFILE
 
-curl -o /tmp/web.zip https://roboshop-builds.s3.amazonaws.com/web.zip &>> $LOGFILE      
+VALIDATE $? "Removing default index html files"
 
-VALIDATE $? "downloading artifact"
+curl -o /tmp/web.zip https://roboshop-builds.s3.amazonaws.com/web.zip &>>$LOGFILE
 
-cd /usr/share/nginx/html &>> $LOGFILE
+VALIDATE $? "Downloading web artifact"
 
-VALIDATE $? "moving to /usr/share/nginx/html"
+cd /usr/share/nginx/html &>>$LOGFILE
 
-unzip /tmp/web.zip &>> $LOGFILE
+VALIDATE $? "Moving to default HTML directory"
 
-VALIDATE $? "unzipping web.zip"
+unzip /tmp/web.zip &>>$LOGFILE
 
-cp /home/centos/RoboShop-Shell/roboshop.conf /etc/nginx/default.d/roboshop.conf &>> $LOGFILE
+VALIDATE $? "unzipping web artifact"
 
-VALIDATE $? "copying roboshop.conf "
+cp /home/centos/roboshop-shell/roboshop.conf /etc/nginx/default.d/roboshop.conf  &>>$LOGFILE
 
-systemctl restart nginx &>> $LOGFILE
+VALIDATE $? "copying roboshop config"
 
-VALIDATE $? "restarting nginx"
+systemctl restart nginx  &>>$LOGFILE
+
+VALIDATE $? "Restarting Nginx"
