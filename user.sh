@@ -31,20 +31,19 @@ yum install nodejs -y &>> $LOGFILE
 
 VALIDATE $? "installing nodeJS"
 
-if [ id $USER_NAME -ne 0 ]; 
+if [ id roboshopx -ne 0 ]; 
 then
     echo -e "$R $USER_NAME is available"
 else    
     useradd roboshop &>> $LOGFILE
     echo -e "$G $USER_NAME in added"
 fi
-if [-d /app];
-then 
-    echo "/app directory exists"
-else     
+if [ -d "/app" ];
+then
+    echo "Directory /app already exists."
+ else
     mkdir /app &>> $LOGFILE
-    VALIDATE $? "/app diectory is created"
-fi    
+fi
 curl -L -o /tmp/user.zip https://roboshop-builds.s3.amazonaws.com/user.zip &>> $LOGFILE
 
 VALIDATE $? "downloading user artifact"

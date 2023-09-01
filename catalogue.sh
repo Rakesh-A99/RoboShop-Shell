@@ -85,7 +85,7 @@ yum install mongodb-org-shell -y &>> $LOGFILE
 
 VALIDATE $? "installing mongoclient"
 
-mongo --host mongodb.myroboshop.site </app/schema/catalogue.js &>> $LOGFILE
+mongo --host 172.31.86.31 < /app/schema/catalogue.js &>> $LOGFILE
 
 VALIDATE $? "connecting to mongo db" 
 
