@@ -26,6 +26,8 @@ VALIDATE(){
     fi
 }
 
+cp /home/centos/RoboShop-Shell/mongo.repo /etc/yum.repos.d/mongo.repo &>> $LOGFILE
+
 yum install mongodb-org -y &>> $LOGFILE
 
 VALIDATE $? "installing mongodb"
