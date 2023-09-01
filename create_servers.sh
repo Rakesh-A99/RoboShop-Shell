@@ -25,6 +25,14 @@ do
     IP_ADDRESS=$(aws ec2 run-instances --image-id $IMAGE_ID  --instance-type $INSTANCE_TYPE --security-group-ids $SECUIRTY_GROUP_ID --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$i}]" | jq -r '.Instances[0].PrivateIpAddress')
     echo "created $i instance: $IP_ADDRESS"
     fi
+    dns_info=$(aws route53 list-resource-record-sets --hosted-zone-id "${HOSTED_ZONE}")
+
+    # Extract the DNS name if it exists
+    existing_dns_name=$(echo "$dns_info" | jq -r '.ResourceRecordSets[] | select(.Name == "'${DOMAIN_NAME}'") | .Name')
+
+    if [ -n "$existing_dns_name" ]; then
+    echo "DNS name already exists: $existing_dns_name"
+    else
     aws route53 change-resource-record-sets --hosted-zone-id $HOSTED_ZONE --change-batch '
     {
             "Changes": [{
@@ -37,4 +45,5 @@ do
                         }}]
     }
     '
+    fi
 done
