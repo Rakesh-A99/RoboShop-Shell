@@ -8,7 +8,7 @@ HOSTED_ZONE=Z08892663AT899M4JPPZH
 
 for i in $@
 do  
-    INSTANCE_EXISTS=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=$i" --query 'Reservations[].Instances[0].InstanceId' --output text))
+    INSTANCE_EXISTS=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=$i" --query 'Reservations[].Instances[0].InstanceId' --output text)
     if [[ $i == "mongodb" || $i == "mysql" ]]
     then
         INSTANCE_TYPE="t3.medium"
