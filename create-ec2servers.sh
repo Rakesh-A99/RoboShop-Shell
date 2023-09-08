@@ -13,5 +13,7 @@ for i in $@
 do 
     echo "creating $i instance"
     IPADDRESS=$(aws ec2 run-instances --image-id $AMI_ID --instance-type t2.micro --security-group-ids $AWS_SG --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$i}]") 
+    Instance_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=$i")
+    echo "$Instance_ID="
     echo "creating $i instance : $IPADDRESS"
 done             
