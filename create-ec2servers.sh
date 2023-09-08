@@ -16,45 +16,31 @@ do
     echo "Checking if $instance_name instance already exists..."
 
     # Use describe-instances to check if an instance with the same name tag exists
-    existing_instance=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=$instance_name" 2>&1)
+    existing_instance=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=$instance_name")
 
-    if [ $? -eq 0 ]; then
-        if [ -z "$existing_instance" ]; then
-            echo "$instance_name instance does not exist. Creating..."
+    if [ -z "$existing_instance" ]; then
+        echo "$instance_name instance does not exist. Creating..."
 
-            # Create the EC2 instance and capture the Private IP address
-            IP_ADDRESS=$(aws ec2 run-instances \
-                --image-id $AMI_ID \
-                --instance-type $INSTANCE_TYPE \
-                --security-group-ids $AWS_SG \
-                --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$instance_name}]" | jq -r '.Instances[0].PrivateIpAddress')
+        # Create the EC2 instance and capture the Private IP address
+        IP_ADDRESS=$(aws ec2 run-instances \
+            --image-id $AMI_ID \
+            --instance-type $INSTANCE_TYPE \
+            --security-group-ids $AWS_SG \
+            --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$instance_name}]" | jq -r '.Instances[0].PrivateIpAddress')
 
-            if [ -n "$IP_ADDRESS" ]; then
-                echo "Created $instance_name instance with Private IP: $IP_ADDRESS"
+        if [ -n "$IP_ADDRESS" ]; then
+            echo "Created $instance_name instance with Private IP: $IP_ADDRESS"
 
-                # Optionally, add more configuration steps here if needed
+            # Optionally, add more configuration steps here if needed
 
-            else
-                echo "Failed to create $instance_name instance"
-            fi
         else
-            echo "$instance_name instance already exists. Skipping..."
+            echo "Failed to create $instance_name instance"
         fi
     else
-        echo "Error: Failed to check $instance_name instance. Error Message: $existing_instance"
+        echo "$instance_name instance already exists. Skipping..."
     fi
 
     # Optionally, associate the instance with a Route 53 hosted zone
-    aws route53 change-resource-record-sets --hosted-zone-id $HOSTEDZONE_ID --change-batch '{
-        "Comment": "CREATE/DELETE/UPSERT a record ",
-        "Changes": [{
-            "Action": "CREATE",
-            "ResourceRecordSet": {
-                "Name": "'$instance_name.$DOMAIN_NAME'",
-                "Type": "A",
-                "TTL": 0,
-                "ResourceRecords": [{ "Value": "'$IP_ADDRESS'"}]
-            }
-        }]
-    }'
+    # aws route53 change-resource-record-sets ...
+
 done
