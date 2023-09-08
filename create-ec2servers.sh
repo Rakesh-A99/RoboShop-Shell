@@ -42,5 +42,17 @@ do
 
     # Optionally, associate the instance with a Route 53 hosted zone
     # aws route53 change-resource-record-sets ...
+    aws route53 change-resource-record-sets --hosted-zone-id Z06370712F3OMF8G17950 --change-batch
+    {
+            "Comment": "CREATE/DELETE/UPSERT a record ",
+            "Changes": [{
+            "Action": "CREATE",
+                        "ResourceRecordSet": {
+                                    "Name": "$i.$DOMAIN_NAME",
+                                    "Type": "A",
+                                    "TTL": 0,
+                                 "ResourceRecords": [{ "Value": "$IP_ADDRESS"}]
+                          }}]
+    }   
 
 done
