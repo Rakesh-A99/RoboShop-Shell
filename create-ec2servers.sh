@@ -12,6 +12,6 @@ HOSTEDZONE_ID=Z08892663AT899M4JPPZH
 for i in $@
 do 
     echo "creating $i instance"
-    IPADDRESS=$(aws ec2 run-instances --image-id $AMI_ID --instance-type t2.micro --security-group-ids $AWS_SG --tags Key=Name,Value=$i) 
+    IPADDRESS=$(aws ec2 run-instances --image-id $AMI_ID --instance-type t2.micro --security-group-ids $AWS_SG --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$i}]") 
     echo "creating $i instance : $IPADDRESS"
 done             
