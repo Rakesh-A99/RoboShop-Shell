@@ -11,7 +11,12 @@ DOMAIN_NAME=myroboshop.site
 HOSTEDZONE_ID=Z08892663AT899M4JPPZH
 for i in $@
 do 
+    if [ $i == $i ] 
+    then 
+    echo $i instanc is already exist
+    else 
     echo "creating $i instance"
     IPADDRESS=$(aws ec2 run-instances --image-id $AMI_ID --instance-type t2.micro --security-group-ids $AWS_SG --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$i}]") 
     echo "creating $i instance : $IPADDRESS"
+    fi 
 done             
