@@ -12,8 +12,8 @@ HOSTEDZONE_ID=Z08892663AT899M4JPPZH
 for i in $@
 do 
     echo "creating $i instance"
-    IPADDRESS=$(aws ec2 run-instances --image-id $AMI_ID --instance-type t2.micro --security-group-ids $AWS_SG --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$i}]") 
-    Instance_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=$i")
+    IPADDRESS=$(aws ec2 run-instances --image-id $AMI_ID --instance-type t2.micro --security-group-ids $AWS_SG --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$i}]" | jq -r '.Instances[0].PrivateIpAddress') 
     echo "$Instance_ID="
     echo "creating $i instance : $IPADDRESS"
+    Instance_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=$i")
 done             
